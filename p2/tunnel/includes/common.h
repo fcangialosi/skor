@@ -11,8 +11,6 @@
 
 //#define WINDOW_SIZE 16                         // Max number of in-flight packets allowed
 
-int16_t qr_caps[] = { 929, 1003, 1091, 1171, 1273, 1367, 1465, 1528, 1628, 1732, 1840, 1952, 2068, 2188, 2303, 2431, 2563, 2699, 2809, 2953 };
-
 #define BINLEN(V) (qr_caps[(V) - 21] * 3 / 4)  // Base64 overhead
 //#define HEADERLEN 8                            // 2b for ID (sockfd), 2b for flags, 2b for seq, 2b for ACK
 #define DATALEN(V) ((BINLEN(V)))// - (HEADERLEN))
