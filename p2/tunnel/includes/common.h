@@ -33,75 +33,75 @@ extern int16_t qr_caps[20];
 //typedef enum { CONN_TIMEWAIT, PKT_TIMEOUT } event_type;
 //typedef enum { NONE = 0x00, SYN = 0x01, ACK = 0x02, FIN = 0x04, RST = 0x10, OOB = 0x20 } flag;
 
-struct tunnel_event {
-    event_type type;
-    uint16_t conn_id;
-    uint16_t seq;                        // Only applicable to PKT_TIMEOUT
-};
+// struct tunnel_event {
+//     event_type type;
+//     uint16_t conn_id;
+//     uint16_t seq;                        // Only applicable to PKT_TIMEOUT
+// };
 
-struct packet {
-    uint16_t seq;                        // The sequence number
-    uint16_t ack;                        // The cumulative ACK
-    uint16_t flags;
+// struct packet {
+//     uint16_t seq;                        // The sequence number
+//     uint16_t ack;                        // The cumulative ACK
+//     uint16_t flags;
 
-    gsize sent;
-    gsize length;
-    guchar *data;
-};
+//     gsize sent;
+//     gsize length;
+//     guchar *data;
+// };
 
-struct connection {
-    uint16_t id;                         // A unique identifier, chosen by the origin
-    int sockfd;
-    conn_state state;
+// struct connection {
+//     uint16_t id;                         // A unique identifier, chosen by the origin
+//     int sockfd;
+//     conn_state state;
 
-    uint16_t next_seq;                   // The sequence number to assign to the next packet sent
-    struct send_window *sent;            // The window of packets that are in-flight through the tunnel
-    struct recv_window *recved;          // The window of packets recved through the tunnel
+//     uint16_t next_seq;                   // The sequence number to assign to the next packet sent
+//     struct send_window *sent;            // The window of packets that are in-flight through the tunnel
+//     struct recv_window *recved;          // The window of packets recved through the tunnel
 
-    int last_ack;
-    int repeat_count;
+//     int last_ack;
+//     int repeat_count;
 
-    UT_hash_handle hh;
-};
+//     UT_hash_handle hh;
+// };
 
 struct app_state {
-    struct connection *connections;      // Hashtable by id
+    //struct connection *connections;      // Hashtable by id
 
     GAsyncQueue *out_queue;              // Queue of QR codes to be sent through Skype tunnel
-    GAsyncQueue *in_queue;               // Queue of packets received through Skype tunnel
-    int pipe[2];                         // Used to wake up thread from select() when a packet arrives
+    //GAsyncQueue *in_queue;               // Queue of packets received through Skype tunnel
+    //int pipe[2];                         // Used to wake up thread from select() when a packet arrives
 
-    fd_set ids;                          // Used to assign unique ids to connections
+    //fd_set ids;                          // Used to assign unique ids to connections
     uint8_t qrversion;                   //
-    uint8_t timeout_interval;            //
+    //uint8_t timeout_interval;            //
 
-    struct eventqueue *events;           // Used to TIMEWAIT on ids and re-send packets after timeout
+    //struct eventqueue *events;           // Used to TIMEWAIT on ids and re-send packets after timeout
 
-    int listenfd;
-    fd_set readfds;
-    fd_set writefds;
-    int maxfd;
+    //int listenfd;
+    //fd_set readfds;
+    //fd_set writefds;
+    //int maxfd;
 };
 
-void write_and_advance_write(uint8_t **write_head, const void *source, uint32_t length, gsize *total);
-void write_and_advance_read(void *destination, const uint8_t **read_head, uint32_t length, gsize *total);
+// void write_and_advance_write(uint8_t **write_head, const void *source, uint32_t length, gsize *total);
+// void write_and_advance_read(void *destination, const uint8_t **read_head, uint32_t length, gsize *total);
 
-struct connection *create_connection(uint16_t id, int sockfd, uint16_t start_seq);
-void set_closed(struct connection *conn, struct packet *packet);
-void destroy_connection(struct connection *conn);
+// struct connection *create_connection(uint16_t id, int sockfd, uint16_t start_seq);
+// void set_closed(struct connection *conn, struct packet *packet);
+// void destroy_connection(struct connection *conn);
 
-int read_socket(const struct connection *conn, struct packet *packet);
-int write_socket(struct connection *conn);
+// int read_socket(const struct connection *conn, struct packet *packet);
+// int write_socket(struct connection *conn);
 
-struct packet *create_packet(uint16_t flags, gsize data_length);
-int extract_header(struct packet *packet, uint16_t *conn_id);
+// struct packet *create_packet(uint16_t flags, gsize data_length);
+// int extract_header(struct packet *packet, uint16_t *conn_id);
 
-void untunnel_packet(const char *b64text);
-void tunnel_packet(uint16_t conn_id, const struct packet *packet, gboolean fast_retrans);
-void queue_packet_for_tunnel(struct connection *conn, struct packet *packet);
+// void untunnel_packet(const char *b64text);
+// void tunnel_packet(uint16_t conn_id, const struct packet *packet, gboolean fast_retrans);
+// void queue_packet_for_tunnel(struct connection *conn, struct packet *packet);
 
-void set_timeout(event_type type, uint16_t conn_id, uint16_t seq);
-void unpack_timeout(struct event *event, event_type *type, uint16_t *conn_id, uint16_t *seq);
+//void set_timeout(event_type type, uint16_t conn_id, uint16_t seq);
+//void unpack_timeout(struct event *event, event_type *type, uint16_t *conn_id, uint16_t *seq);
 
 #endif
 

@@ -210,7 +210,7 @@ void tunnel_start_server_loop(struct arguments *args) {
     guchar *data = g_malloc(data_length);
     // TODO add data into data
 
-    GST_INFO("New packet entering tunnel queue!")
+    GST_INFO("New packet entering tunnel queue!");
 
     // Encode buffer as QRCode(base64(buffer))
     uint8_t *buffer = g_malloc(data_length);
