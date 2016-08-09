@@ -366,8 +366,8 @@ void tunnel_start_server_loop(struct arguments *args) {
         // }
     // }
 
-    (void)rc;
+    return rc;
 
   error:
-    ;
+    return -1;
 }
