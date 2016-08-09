@@ -1,18 +1,23 @@
 /**
- * SECTION:element-skorsrc
+ * GStreamer SkorSrc Element
  *
- * FIXME:Describe skorsrc here.
+ * Converts QRcode objects (from libqrencode) into raw video frames
+ * that can be displayed using a sink, such as a v4l2 virtual webcam.
  *
- * <refsect2>
- * <title>Example launch line</title>
- * |[
- * gst-launch -v -m fakesrc ! skorsrc ! fakesink silent=TRUE
- * ]|
- * </refsect2>
+ * Original version by: Phil Kim <pyk@cs.umd.edu>
+ * Modified by: Frank Cangialosi <frank@cs.umd.edu>
+ * Last modified: August 2016
+ *
+ * Sanity check:
+ * gst-launch-1.0 -v -m fakesrc ! skorsrc ! fakesink silent=TRUE
+ *
+ * Should be run *indirectly* by executing the tunnel program, which constructs
+ * a pipeline such as the following and attains a handle to the QR code queue:
+ * skorsrc ! video/x-raw,format=YUY2,framerate=1/1 ! v4l2sink device=/dev/video0
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#include <config.h>
 #endif
 #include "gstskorsrc.h"
 #include "skorsrc.h"
@@ -81,8 +86,8 @@ gst_skor_src_class_init (GstSkorSrcClass * klass)
       g_param_spec_pointer ("queue", "Queue", "Input queue from which the plugin will consume QR codes", G_PARAM_READABLE));
 
   gst_element_class_set_static_metadata (gstelement_class,
-      "Skor video test source", "Source/Video",
-      "Creates a test Skor video stream", "Phil Kim <pyk@cs.umd.edu>");
+      "Skor QR code source", "Source/Video",
+      "Converts QRcode objects (from libqrencode) into raw video frames.", "Frank Cangialosi <frank@cs.umd.edu>");
 
   gst_element_class_add_pad_template (gstelement_class,
       gst_static_pad_template_get (&gst_skor_src_template));
