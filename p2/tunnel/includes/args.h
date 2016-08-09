@@ -5,10 +5,7 @@
 #include <glib.h>
 #include <stdint.h>
 
-typedef enum { ORIGIN, TERMINUS } tunnel_end;
-
 struct arguments {
-    tunnel_end end;
     uint8_t send_framerate;
     uint8_t send_timeout;
     uint8_t recv_framerate;

@@ -6,20 +6,20 @@
 #include <sys/queue.h>
 
 #include "args.h"
-#include "eventqueue.h"
-#include "uthash.h"
+//#include "eventqueue.h"
+//#include "uthash.h"
 
-#define WINDOW_SIZE 16                         // Max number of in-flight packets allowed
+//#define WINDOW_SIZE 16                         // Max number of in-flight packets allowed
 
 #define BINLEN(V) (qr_caps[(V) - 21] * 3 / 4)  // Base64 overhead
-#define HEADERLEN 8                            // 2b for ID (sockfd), 2b for flags, 2b for seq, 2b for ACK
-#define DATALEN(V) ((BINLEN(V)) - (HEADERLEN))
+//#define HEADERLEN 8                            // 2b for ID (sockfd), 2b for flags, 2b for seq, 2b for ACK
+#define DATALEN(V) ((BINLEN(V)))// - (HEADERLEN))
 
-#define NOT_JUST_ACK(P) ((P->flags & (SYN | FIN | RST)) != 0 || P->length > 0)
-#define LOGSEQ(P) (NOT_JUST_ACK(P) ? P->seq : -1)
-#define LOGACK(P) ((P->flags & ACK) == ACK ? P->ack : -1)
+//#define NOT_JUST_ACK(P) ((P->flags & (SYN | FIN | RST)) != 0 || P->length > 0)
+//#define LOGSEQ(P) (NOT_JUST_ACK(P) ? P->seq : -1)
+//#define LOGACK(P) ((P->flags & ACK) == ACK ? P->ack : -1)
 
-#define CONN_TIMEWAIT_INTERVAL 60              // Number of seconds to wait before we can recycle the connection's ID
+//#define CONN_TIMEWAIT_INTERVAL 60              // Number of seconds to wait before we can recycle the connection's ID
 
 #define GST_CAT_DEFAULT gst_skor_tunnel_debug
 #define check(A, L, ...) if (A) { GST_CAT_LEVEL_LOG(GST_CAT_DEFAULT, L, NULL, ##__VA_ARGS__); rc = -1; goto error; }
@@ -29,9 +29,9 @@ extern struct app_state *g_state;
 
 extern int16_t qr_caps[20];
 
-typedef enum { NEW, HANDSHAKING, ESTABLISHED, FIN_SENT, FIN_RECVED } conn_state;
-typedef enum { CONN_TIMEWAIT, PKT_TIMEOUT } event_type;
-typedef enum { NONE = 0x00, SYN = 0x01, ACK = 0x02, FIN = 0x04, RST = 0x10, OOB = 0x20 } flag;
+//typedef enum { NEW, HANDSHAKING, ESTABLISHED, FIN_SENT, FIN_RECVED } conn_state;
+//typedef enum { CONN_TIMEWAIT, PKT_TIMEOUT } event_type;
+//typedef enum { NONE = 0x00, SYN = 0x01, ACK = 0x02, FIN = 0x04, RST = 0x10, OOB = 0x20 } flag;
 
 struct tunnel_event {
     event_type type;
@@ -72,8 +72,8 @@ struct app_state {
     int pipe[2];                         // Used to wake up thread from select() when a packet arrives
 
     fd_set ids;                          // Used to assign unique ids to connections
-    uint8_t qrversion;                   // 
-    uint8_t timeout_interval;            // 
+    uint8_t qrversion;                   //
+    uint8_t timeout_interval;            //
 
     struct eventqueue *events;           // Used to TIMEWAIT on ids and re-send packets after timeout
 
@@ -84,7 +84,7 @@ struct app_state {
 };
 
 void write_and_advance_write(uint8_t **write_head, const void *source, uint32_t length, gsize *total);
-void write_and_advance_read(void *destination, const uint8_t **read_head, uint32_t length, gsize *total); 
+void write_and_advance_read(void *destination, const uint8_t **read_head, uint32_t length, gsize *total);
 
 struct connection *create_connection(uint16_t id, int sockfd, uint16_t start_seq);
 void set_closed(struct connection *conn, struct packet *packet);

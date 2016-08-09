@@ -137,7 +137,7 @@ int extract_header(struct packet *packet, uint16_t *conn_id) {
 // It writes to the self-pipe in order to wake up the select() in the server's main loop.
 void untunnel_packet(const char *b64text) {
     struct packet *packet = g_malloc(sizeof(struct packet));
-    packet->seq = packet->ack = packet->flags = packet->sent = 0; 
+    packet->seq = packet->ack = packet->flags = packet->sent = 0;
     packet->data = g_base64_decode(b64text, &packet->length);
     g_async_queue_push(g_state->in_queue, packet);
 
@@ -156,19 +156,19 @@ gint sort(gconstpointer a, gconstpointer b, gpointer user_data) {
 // This frames a packet, encodes it into a QR code, and then pushes it onto SkorSrc's input queue.
 // It also sets a re-send timeout if the packet is a SYN, FIN, or contains data (but not if it's only an ACK).
 void tunnel_packet(uint16_t conn_id, const struct packet *packet, gboolean fast_retrans) {
-    assert(packet->length <= (gsize)DATALEN(g_state->qrversion));
+    // assert(packet->length <= (gsize)DATALEN(g_state->qrversion));
 
-    GST_INFO("[%d/%d/%d/%ld/%s] Entering tunnel queue.", conn_id, LOGSEQ(packet), LOGACK(packet), packet->length, 
+    GST_INFO("[%d/%d/%d/%ld/%s] Entering tunnel queue.", conn_id, LOGSEQ(packet), LOGACK(packet), packet->length,
             (packet->flags & SYN) == SYN ? "S" : (packet->flags & FIN) == FIN ? "F" : (packet->flags & RST) == RST ? "R" : "-");
 
     uint8_t *buffer = g_malloc(packet->length + HEADERLEN);
     uint8_t *write_head = buffer;
 
-    write_and_advance_write(&write_head, &(uint16_t){ htons(conn_id) },      sizeof(uint16_t), NULL); 
-    write_and_advance_write(&write_head, &(uint16_t){ htons(packet->flags) }, sizeof(uint16_t), NULL); 
-    write_and_advance_write(&write_head, &(uint16_t){ htons(packet->seq) },   sizeof(uint16_t), NULL); 
-    write_and_advance_write(&write_head, &(uint16_t){ htons(packet->ack) },   sizeof(uint16_t), NULL); 
-    write_and_advance_write(&write_head, packet->data,                        packet->length,   NULL); 
+    write_and_advance_write(&write_head, &(uint16_t){ htons(conn_id) },      sizeof(uint16_t), NULL);
+    write_and_advance_write(&write_head, &(uint16_t){ htons(packet->flags) }, sizeof(uint16_t), NULL);
+    write_and_advance_write(&write_head, &(uint16_t){ htons(packet->seq) },   sizeof(uint16_t), NULL);
+    write_and_advance_write(&write_head, &(uint16_t){ htons(packet->ack) },   sizeof(uint16_t), NULL);
+    write_and_advance_write(&write_head, packet->data,                        packet->length,   NULL);
 
     gchar *base64 = g_base64_encode(buffer, packet->length + HEADERLEN);
     QRcode *qrcode = QRcode_encodeString8bit(base64, g_state->qrversion, QR_ECLEVEL_L);
@@ -188,9 +188,9 @@ void tunnel_packet(uint16_t conn_id, const struct packet *packet, gboolean fast_
 
 // Given a connection and a packet to send through the tunnel, performs the following:
 // 1) sets the ACK number if the flag is set
-// 2) assigns a sequence number if appropriate 
+// 2) assigns a sequence number if appropriate
 // 3) adds the packet to the send window if appropriate, clearing the sockfd if the window is full
-// 4) adds the packet to the tunnel's input queue 
+// 4) adds the packet to the tunnel's input queue
 void queue_packet_for_tunnel(struct connection *conn, struct packet *packet) {
     if ((packet->flags & ACK) == ACK)
         packet->ack = conn->recved->ack;
@@ -208,7 +208,7 @@ void queue_packet_for_tunnel(struct connection *conn, struct packet *packet) {
 
 void set_timeout(event_type type, uint16_t conn_id, uint16_t seq) {
     struct event *event = g_malloc(sizeof(struct event));
-   
+
     event->remaining_time = g_malloc(sizeof(struct timeval));
     event->remaining_time->tv_usec = 0;
     event->remaining_time->tv_sec = (type == CONN_TIMEWAIT) ? CONN_TIMEWAIT_INTERVAL

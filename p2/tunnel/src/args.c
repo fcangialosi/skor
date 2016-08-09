@@ -36,7 +36,7 @@ static error_t option_parser(int key, char *value, struct argp_state *state) {
     struct arguments *args = state->input;
     error_t ret = 0;
     int int_value;
-    
+
     switch (key) {
         case 's':
             if (parse_and_validate_int(value, 1, 30, &int_value) < 0)
@@ -56,7 +56,6 @@ static error_t option_parser(int key, char *value, struct argp_state *state) {
         case 'p':
             if (parse_and_validate_int(value, 1, 65535, &int_value) < 0)
                 argp_error(state, "Port number must be between 1 and 65535 inclusive");
-            args->end = ORIGIN;
             args->port = htons(int_value);
             break;
         case 'o':
@@ -99,13 +98,13 @@ static error_t option_parser(int key, char *value, struct argp_state *state) {
 int parse_arguments(int argc, char *argv[], struct arguments *result) {
     int rc = 0;
     memset(result, 0, sizeof(*result));
-    result->end = TERMINUS;
     result->send_framerate = 1;
-    result->send_timeout = 30;
+    result->send_timeout = 30; // TODO get rid of this
     result->recv_framerate = 1;
-    result->qrversion = 25;
-    result->x = result->y = 200;
-    result->w = result->h = 400;
+    result->qrversion = 10;
+    result->x = 0;
+    result->y = 20;
+    result->w = result->h = 65;
 
     struct argp_option options[] = {
         { "send-framerate", 's', "number", 0, "The number of frames per second to send", 0 },
